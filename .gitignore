@@ -1,0 +1,11 @@
+_build
+.vagrant
+*~
+mykiln
+myfurnace
+furnace
+mycluster
+incinerator
+sampler
+mysampler
+packer.log
