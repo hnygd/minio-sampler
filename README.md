@@ -83,7 +83,7 @@ Please see [Detailed Install FreeBSD & Linux](DETAILED-INSTALL.md)
 
 A virtual interface is created with a free IP address from the LAN. You must provide this free IP address in `config.ini` in the `ACCESSIP` section.
 
-Everything is accessible via frontend at `http::/ACCESSIP`
+Everything is accessible via frontend at `http://ACCESSIP`
 
 ### Disk Sizes
 
