@@ -1,3 +1,7 @@
+0.139
+
+* Update versions
+
 0.138
 
 * Include link to blog post

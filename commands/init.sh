@@ -186,8 +186,8 @@ cat >site.yml<<"EOF"
       gossip_key: "BBtPyNSRI+/iP8RHB514CZ5By3x1jJLu4SqTVzM4gPA="
       jails_interface: jailnet
       consul_base: consul-amd64-13_1
-      consul_version: "2.0.27"
-      consul_pot_name: consul-amd64-13_1_2_0_27
+      consul_version: "2.2.1"
+      consul_pot_name: consul-amd64-13_1_2_2_1
       consul_clone_name: consul-clone
       consul_url: https://potluck.honeyguide.net/consul
       consul_ip: 10.200.1.2
@@ -195,8 +195,8 @@ cat >site.yml<<"EOF"
       consul_bootstrap: 1
       consul_peers: 1.2.3.4
       nomad_base: nomad-server-amd64-13_1
-      nomad_version: "2.0.21"
-      nomad_pot_name: nomad-server-amd64-13_1_2_0_21
+      nomad_version: "3.3.1"
+      nomad_pot_name: nomad-server-amd64-13_1_3_3_1
       nomad_clone_name: nomad-server-clone
       nomad_ip: 10.200.1.3
       nomad_nodename: nomad
@@ -206,16 +206,16 @@ cat >site.yml<<"EOF"
       nomad_job_src: /root/nomadjobs/nextcloud.nomad
       nomad_job_dest: /root/nomadjobs/nextcloud.nomad
       traefik_base: traefik-consul-amd64-13_1
-      traefik_version: "1.3.5"
-      traefik_pot_name: traefik-consul-amd64-13_1_1_3_5
+      traefik_version: "1.5.1"
+      traefik_pot_name: traefik-consul-amd64-13_1_1_5_1
       traefik_clone_name: traefik-consul-clone
       traefik_url: https://potluck.honeyguide.net/traefik-consul
       traefik_ip: 10.200.1.4
       traefik_mount_in: /mnt/data/jaildata/traefik
       traefik_nodename: traefikconsul
       beast_base: beast-of-argh-amd64-13_1
-      beast_version: "0.0.29"
-      beast_pot_name: beast-of-argh-amd64-13_1_0_0_29
+      beast_version: "0.2.1"
+      beast_pot_name: beast-of-argh-amd64-13_1_0_2_1
       beast_nodename: beast
       beast_url: https://potluck.honeyguide.net/beast-of-argh/
       beast_clone_name: beast-clone
@@ -239,8 +239,8 @@ cat >site.yml<<"EOF"
       beast_syslog_version: "3.37"
       beast_empty_var: ""
       mariadb_base: mariadb-amd64-13_1
-      mariadb_version: "2.0.12"
-      mariadb_pot_name: mariadb-amd64-13_1_2_0_12
+      mariadb_version: "3.1.1"
+      mariadb_pot_name: mariadb-amd64-13_1_3_1_1
       mariadb_url: https://potluck.honeyguide.net/mariadb
       mariadb_nodename: mariadb
       mariadb_clone_name: mariadb-clone
@@ -260,7 +260,7 @@ cat >site.yml<<"EOF"
       nextcloud_minio_alt: "10.100.1.1:10901"
       nextcloud_url: https://potluck.honeyguide.net/nextcloud-nginx-nomad
       nextcloud_base: nextcloud-nginx-nomad-amd64-13_1
-      nextcloud_version: "0.67"
+      nextcloud_version: "0.70"
       nextcloud_copy_objectstore_src: /root/nomadjobs/objectstore.config.php
       nextcloud_copy_objectstore_dest: /root/objectstore.config.php
       nextcloud_copy_mysql_src: /root/nomadjobs/mysql.config.php
@@ -2591,7 +2591,7 @@ Vagrant.configure("2") do |config|
       sysrc route_computestatic="-net 10.200.2.0/24 10.200.2.1"
       service netif restart && service routing restart
       echo "checking DNS resolution with ping"
-      ping -c 1 google.com
+      ping -c 1 google.com || true
       mkdir -p /mnt/minio
       gpart create -s GPT ada1
       gpart add -t freebsd-zfs -l minio-disk1 ada1
@@ -2605,6 +2605,7 @@ Vagrant.configure("2") do |config|
       gpart create -s GPT ada4
       gpart add -t freebsd-zfs -l minio-disk4 ada4
       zpool create -m /mnt/minio/disk4 minio-disk4 ada4p1
+      sysrc clear_tmp_enable="YES"
     SHELL
   end
   config.vm.define "minio2", primary: false do |node|
@@ -2661,7 +2662,7 @@ Vagrant.configure("2") do |config|
       echo "net.inet.tcp.tolerate_missing_ts=1" >> /etc/sysctl.conf
       service netif restart && service routing restart
       echo "checking DNS resolution with ping"
-      ping -c 1 google.com
+      ping -c 1 google.com || true
       mkdir -p /mnt/minio
       gpart create -s GPT ada1
       gpart add -t freebsd-zfs -l minio-disk1 ada1
@@ -2675,6 +2676,7 @@ Vagrant.configure("2") do |config|
       gpart create -s GPT ada4
       gpart add -t freebsd-zfs -l minio-disk4 ada4
       zpool create -m /mnt/minio/disk4 minio-disk4 ada4p1
+      sysrc clear_tmp_enable="YES"
     SHELL
     node.vm.provision 'ansible' do |ansible|
     ansible.compatibility_mode = '2.0'
