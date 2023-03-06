@@ -1,6 +1,14 @@
+0.140
+
+* Remote patched pot_common.sh
+
+---
+
 0.139
 
 * Update versions
+
+---
 
 0.138
 

@@ -1204,18 +1204,18 @@ cat >site.yml<<"EOF"
       port: 22
       delay: 2
 
-  - name: HOTFIX temp fix to patch pot common.sh
-    become: yes
-    become_user: root
-    shell:
-      cmd: |
-        cd /tmp
-        git clone https://github.com/bsdpot/pot.git potpatch
-        cp -f /tmp/potpatch/share/pot/*.sh /usr/local/share/pot/
-        rm -rf potpatch
-        fetch -o /tmp/common.sh.in "https://raw.githubusercontent.com/bretton/minio-sampler/main/includes/pot_common.sh"
-        cp -f /tmp/common.sh.in /usr/local/share/pot/common.sh
-        rm /tmp/common.sh.in
+  #- name: HOTFIX temp fix to patch pot common.sh
+  #  become: yes
+  #  become_user: root
+  #  shell:
+  #    cmd: |
+  #      cd /tmp
+  #      git clone https://github.com/bsdpot/pot.git potpatch
+  #      cp -f /tmp/potpatch/share/pot/*.sh /usr/local/share/pot/
+  #      rm -rf potpatch
+  #      fetch -o /tmp/common.sh.in "https://raw.githubusercontent.com/bretton/minio-sampler/main/includes/pot_common.sh"
+  #      cp -f /tmp/common.sh.in /usr/local/share/pot/common.sh
+  #      rm /tmp/common.sh.in
 
   - name: Setup pot.conf
     become: yes
