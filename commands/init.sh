@@ -214,8 +214,8 @@ cat >site.yml<<"EOF"
       traefik_mount_in: /mnt/data/jaildata/traefik
       traefik_nodename: traefikconsul
       beast_base: beast-of-argh-amd64-13_1
-      beast_version: "0.2.1"
-      beast_pot_name: beast-of-argh-amd64-13_1_0_2_1
+      beast_version: "0.2.8"
+      beast_pot_name: beast-of-argh-amd64-13_1_0_2_8
       beast_nodename: beast
       beast_url: https://potluck.honeyguide.net/beast-of-argh/
       beast_clone_name: beast-clone
@@ -236,7 +236,7 @@ cat >site.yml<<"EOF"
       beast_smtp_pass: "examplepass"
       beast_smtp_from: "sampler@minio-sampler.com"
       beast_alertaddress: "your@example.com"
-      beast_syslog_version: "3.37"
+      beast_syslog_version: "3.38"
       beast_empty_var: ""
       mariadb_base: mariadb-amd64-13_1
       mariadb_version: "3.1.1"

@@ -1,3 +1,9 @@
+0.141
+
+* Update Beast of Argh to 0.2.8
+
+---
+
 0.140
 
 * Remote patched pot_common.sh
