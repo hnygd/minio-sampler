@@ -50,7 +50,7 @@ PATH=/home/<username>/minio-sampler/bin:$PATH; export PATH
 
 Download and configure minio-sampler:
 ```
-git clone https://github.com/bretton/minio-sampler.git
+git clone https://github.com/hnygd/minio-sampler.git
 cd minio-sampler
 
   (edit) config.ini and set ACCESSIP to a free IP on LAN, and set DISKSIZE
@@ -86,7 +86,7 @@ sudo apt-get update && sudo apt-get install packer vagrant
 
 Download and configure minio-sampler:
 ```
-git clone https://github.com/bretton/minio-sampler.git
+git clone https://github.com/hnygd/minio-sampler.git
 cd minio-sampler
 
   (edit) config.ini and set ACCESSIP to a free IP on LAN, and set DISKSIZE

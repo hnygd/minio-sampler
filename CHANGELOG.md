@@ -1,3 +1,15 @@
+0.142
+
+* Update versions of pot images
+* Update pf firewall ruleset
+* Restrict CPU count to 1
+* Switch from Latest to Quarterlies package sources for nginx-full
+* Fix links to repo in README files
+* Update consul config for consul client on servers
+* Add back preparenextcloud.sh script
+
+---
+
 0.141
 
 * Update Beast of Argh to 0.2.8

@@ -11,8 +11,8 @@ As of 2022-11-24 everything works EXCEPT automatic nextcloud install. You can ev
 
 # Outline
 This will bring up 2 minio servers:
-* minio1 (8CPU, 8GB, 4 attached disks)
-* minio2 (4CPU, 4GB, 4 attached disks)
+* minio1 (8GB, 4 attached disks)
+* minio2 (4GB, 4 attached disks)
 
 # Requirements
 The host computer running `minio-sampler` needs at least 16 CPU threads, 16GB memory, plus 50GB disk space, preferably high speed SSD. The setup takes an hour or so with packbox step included.
@@ -22,7 +22,7 @@ The host computer running `minio-sampler` needs at least 16 CPU threads, 16GB me
 ## Quickstart
 To create your own sampler, init the VMs:
 
-    git clone https://github.com/bretton/minio-sampler.git
+    git clone https://github.com/hnygd/minio-sampler
     cd minio-sampler
 
       (edit) config.ini and set ACCESSIP to a free IP on LAN, and set DISKSIZE

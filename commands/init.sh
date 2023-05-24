@@ -185,9 +185,12 @@ cat >site.yml<<"EOF"
       datacenter_name: samplerdc
       gossip_key: "BBtPyNSRI+/iP8RHB514CZ5By3x1jJLu4SqTVzM4gPA="
       jails_interface: jailnet
+      jails_ip: 10.200.1
+      compute_interface: compute
+      compute_ip: 10.200.2
       consul_base: consul-amd64-13_1
-      consul_version: "2.2.1"
-      consul_pot_name: consul-amd64-13_1_2_2_1
+      consul_version: "2.4.2"
+      consul_pot_name: consul-amd64-13_1_2_4_2
       consul_clone_name: consul-clone
       consul_url: https://potluck.honeyguide.net/consul
       consul_ip: 10.200.1.2
@@ -195,8 +198,8 @@ cat >site.yml<<"EOF"
       consul_bootstrap: 1
       consul_peers: 1.2.3.4
       nomad_base: nomad-server-amd64-13_1
-      nomad_version: "3.3.1"
-      nomad_pot_name: nomad-server-amd64-13_1_3_3_1
+      nomad_version: "3.5.1"
+      nomad_pot_name: nomad-server-amd64-13_1_3_5_1
       nomad_clone_name: nomad-server-clone
       nomad_ip: 10.200.1.3
       nomad_nodename: nomad
@@ -206,16 +209,16 @@ cat >site.yml<<"EOF"
       nomad_job_src: /root/nomadjobs/nextcloud.nomad
       nomad_job_dest: /root/nomadjobs/nextcloud.nomad
       traefik_base: traefik-consul-amd64-13_1
-      traefik_version: "1.5.1"
-      traefik_pot_name: traefik-consul-amd64-13_1_1_5_1
+      traefik_version: "1.7.1"
+      traefik_pot_name: traefik-consul-amd64-13_1_1_7_1
       traefik_clone_name: traefik-consul-clone
       traefik_url: https://potluck.honeyguide.net/traefik-consul
       traefik_ip: 10.200.1.4
       traefik_mount_in: /mnt/data/jaildata/traefik
       traefik_nodename: traefikconsul
       beast_base: beast-of-argh-amd64-13_1
-      beast_version: "0.2.8"
-      beast_pot_name: beast-of-argh-amd64-13_1_0_2_8
+      beast_version: "0.4.1"
+      beast_pot_name: beast-of-argh-amd64-13_1_0_4_1
       beast_nodename: beast
       beast_url: https://potluck.honeyguide.net/beast-of-argh/
       beast_clone_name: beast-clone
@@ -239,8 +242,8 @@ cat >site.yml<<"EOF"
       beast_syslog_version: "3.38"
       beast_empty_var: ""
       mariadb_base: mariadb-amd64-13_1
-      mariadb_version: "3.1.1"
-      mariadb_pot_name: mariadb-amd64-13_1_3_1_1
+      mariadb_version: "3.3.1"
+      mariadb_pot_name: mariadb-amd64-13_1_3_3_1
       mariadb_url: https://potluck.honeyguide.net/mariadb
       mariadb_nodename: mariadb
       mariadb_clone_name: mariadb-clone
@@ -260,7 +263,7 @@ cat >site.yml<<"EOF"
       nextcloud_minio_alt: "10.100.1.1:10901"
       nextcloud_url: https://potluck.honeyguide.net/nextcloud-nginx-nomad
       nextcloud_base: nextcloud-nginx-nomad-amd64-13_1
-      nextcloud_version: "0.70"
+      nextcloud_version: "0.71"
       nextcloud_copy_objectstore_src: /root/nomadjobs/objectstore.config.php
       nextcloud_copy_objectstore_dest: /root/objectstore.config.php
       nextcloud_copy_mysql_src: /root/nomadjobs/mysql.config.php
@@ -337,7 +340,7 @@ cat >site.yml<<"EOF"
     copy:
       dest: /usr/local/etc/pkg/repos/FreeBSD.conf
       content: |
-        FreeBSD: { url: "pkg+http://pkg.FreeBSD.org/${ABI}/latest" }
+        FreeBSD: { url: "pkg+http://pkg.FreeBSD.org/${ABI}/quarterly" }
 
   - name: Upgrade package pkg
     become: yes
@@ -1279,16 +1282,20 @@ cat >site.yml<<"EOF"
           "datacenter": "{{ datacenter_name }}",
           "log_level": "WARN",
           "data_dir": "/var/db/consul",
-          "verify_incoming": false,
-          "verify_outgoing": false,
-          "verify_server_hostname": false,
-          "verify_incoming_rpc": false,
+          "tls": {
+            "defaults": {
+              "verify_incoming": false,
+              "verify_outgoing": false
+            },
+            "internal_rpc": {
+              "verify_incoming": false,
+              "verify_server_hostname": false
+            }
+          },
           "encrypt": "{{ gossip_key }}",
           "enable_syslog": true,
           "leave_on_terminate": true,
-          "start_join": [
-            "{{ consul_ip }}"
-          ],
+          "start_join": [ "{{ consul_ip }}" ],
           "telemetry": {
             "prometheus_retention_time": "24h"
           },
@@ -1376,7 +1383,7 @@ cat >site.yml<<"EOF"
           -E NODENAME={{ consul_nodename }} \
           -E IP={{ consul_ip }} \
           -E BOOTSTRAP={{ consul_bootstrap }} \
-          -E PEERS={{ consul_peers }} \
+          -E CONSULSERVERS="{{ consul_ip }}" \
           -E GOSSIPKEY={{ gossip_key }} \
           -E REMOTELOG={{ beast_ip }}
         pot set-attr -p {{ consul_clone_name }} -A start-at-boot -V True
@@ -1633,7 +1640,7 @@ cat >site.yml<<"EOF"
           -E NODENAME={{ nomad_nodename }} \
           -E DATACENTER={{ datacenter_name }} \
           -E IP={{ nomad_ip }} \
-          -E CONSULSERVERS={{ consul_ip }} \
+          -E CONSULSERVERS="{{ consul_ip }}" \
           -E BOOTSTRAP={{ nomad_bootstrap }} \
           -E GOSSIPKEY="{{ gossip_key }}" \
           -E REMOTELOG={{ beast_ip }} \
@@ -1775,7 +1782,7 @@ cat >site.yml<<"EOF"
           -E NODENAME={{ traefik_nodename }} \
           -E DATACENTER={{ datacenter_name }} \
           -E IP={{ traefik_ip }} \
-          -E CONSULSERVERS={{ consul_ip }} \
+          -E CONSULSERVERS="{{ consul_ip }}" \
           -E GOSSIPKEY="{{ gossip_key }}" \
           -E REMOTELOG="{{ beast_ip }}"
         pot set-attr -p {{ traefik_clone_name }} -A start-at-boot -V True
@@ -1814,8 +1821,8 @@ cat >site.yml<<"EOF"
           -E DATACENTER={{ datacenter_name }} \
           -E NODENAME={{ mariadb_nodename }} \
           -E IP={{ mariadb_ip }} \
-          -E CONSULSERVERS='{{ consul_ip }}' \
-          -E GOSSIPKEY='{{ gossip_key }}' \
+          -E CONSULSERVERS="{{ consul_ip }}" \
+          -E GOSSIPKEY="{{ gossip_key }}" \
           -E DBROOTPASS={{ mariadb_rootpass }} \
           -E DBSCRAPEPASS={{ mariadb_scrapepass }} \
           -E DUMPSCHEDULE="{{ mariadb_dumpschedule }}" \
@@ -1976,7 +1983,7 @@ cat >site.yml<<"EOF"
           -E DATACENTER={{ datacenter_name }} \
           -E NODENAME={{ beast_nodename }} \
           -E IP={{ beast_ip }} \
-          -E CONSULSERVERS="{{ beast_join_consul }}" \
+          -E CONSULSERVERS="{{ consul_ip }}" \
           -E GOSSIPKEY="{{ gossip_key }}" \
           -E GRAFANAUSER={{ beast_grafana_user }} \
           -E GRAFANAPASSWORD={{ beast_grafana_pass }} \
@@ -2187,10 +2194,16 @@ cat >site.yml<<"EOF"
           "datacenter": "{{ datacenter_name }}",
           "log_level": "WARN",
           "data_dir": "/var/db/consul",
-          "verify_incoming": false,
-          "verify_outgoing": false,
-          "verify_server_hostname": false,
-          "verify_incoming_rpc": false,
+                    "tls": {
+            "defaults": {
+              "verify_incoming": false,
+              "verify_outgoing": false
+            },
+            "internal_rpc": {
+              "verify_incoming": false,
+              "verify_server_hostname": false
+            }
+          },
           "encrypt": "{{ gossip_key }}",
           "enable_syslog": true,
           "leave_on_terminate": true,
@@ -2387,44 +2400,72 @@ cat >site.yml<<"EOF"
       port: 22
       delay: 2
 
-  - name: Create minio1 pf.conf
-    become: yes
-    become_user: root
-    copy:
-      dest: /etc/pf.conf
-      content: |
-        ext_if = "untrusted"
-        set block-policy drop
-        set skip on lo0
-        scrub in all
-        block
-        antispoof for $ext_if inet
-        antispoof for jailnet inet
-        antispoof for compute inet
-        pass inet proto icmp icmp-type {echorep, echoreq, unreach, squench, timex}
-        pass on $ext_if inet6 proto icmp6 icmp6-type {unreach, toobig, neighbrsol, neighbradv, echoreq, echorep, timex}
-        pass in on $ext_if inet proto udp from port = 68 to port = 67
-        pass out on $ext_if inet proto udp from port = 67 to port = 68
-        pass in quick on $ext_if proto tcp from any to port 22
-        pass out on $ext_if proto tcp from port 22 to any flags any
-        pass in on $ext_if proto tcp from any to port 80
-        pass out on $ext_if proto tcp from port 80 to any flags any
-        pass in on $ext_if proto tcp from any to port 443
-        pass out on $ext_if proto tcp from port 443 to any flags any
-        pass in on $ext_if proto tcp from any to port 3306
-        pass out on $ext_if proto tcp from port 3306 to any flags any
-        pass in on $ext_if proto tcp from any to port 9000
-        pass out on $ext_if proto tcp from port 9000 to any flags any
-        pass in on $ext_if proto tcp from any to port 10443
-        pass out on $ext_if proto tcp from port 10443 to any flags any
-        pass on jailnet
-        pass on compute
-        pass on bridge0
-        pass in on $ext_if from 10.100.1/24
-        pass from 10.192/10 to any
-        pass from 10.200.1/24 to any
-        pass from 10.200.2/24 to any
-        pass out on $ext_if
+- name: Create minio1 pf.conf
+  become: yes
+  become_user: root
+  copy:
+    dest: /etc/pf.conf
+    content: |
+      ext_if = "untrusted"
+      jail_if="{{ jails_interface }}"
+      compute_if="{{ compute_interface }}"
+      bridge_if="bridge0"
+      set block-policy drop
+      set skip on lo0
+      scrub in all
+
+      rdr-anchor "pot-rdr/*"
+      nat-anchor "pot-rdr/*"
+
+      # nat rules
+      nat on $ext_if from $jail_if:network to ! $jail_if:network -> $ext_if:0
+      nat on $ext_if from {{ jails_ip }}/24 -> $ext_if:0
+      nat on $ext_if from $compute_if:network to ! $compute_if:network -> $ext_if:0
+      nat on $ext_if from {{ compute_ip }}/24 -> $ext_if:0
+      nat on $ext_if from 10.192/10 to !10/8 -> $ext_if:0
+
+      block
+      antispoof for $ext_if inet
+      antispoof for jailnet inet
+      antispoof for compute inet
+
+      pass inet proto icmp icmp-type {echorep, echoreq, unreach, squench, timex}
+
+      # ssh access
+      pass in quick on $ext_if proto tcp from any to port 22
+      # prevent pf start/reload from killing ansible ssh session
+      pass out on $ext_if proto tcp from port 22 to any flags any
+
+      # ntp
+      pass in on $ext_if inet proto udp from any to any port 123
+      # pass in www
+      pass in quick on $ext_if proto tcp from any to port 80
+      pass in quick on $ext_if proto tcp from any to port 443
+
+      pass in on $ext_if inet proto udp from port = 68 to port = 67
+      pass out on $ext_if inet proto udp from port = 67 to port = 68
+      pass in on $ext_if proto tcp from any to port 3306
+      pass out on $ext_if proto tcp from port 3306 to any flags any
+      pass in on $ext_if proto tcp from any to port 9000
+      pass out on $ext_if proto tcp from port 9000 to any flags any
+      pass in on $ext_if proto tcp from any to port 10443
+      pass out on $ext_if proto tcp from port 10443 to any flags any
+
+      # pass internal traffic
+      pass on $jail_if
+      pass from {{ jails_ip }}/24 to any
+      pass on $compute_if
+      pass from {{ compute_ip }}/24 to any
+
+      # need this to access nomad pot jobs 
+      pass on $bridge_if
+      pass from 10.192/10 to !10/8
+      pass from 10.192/10 to {{ jails_ip }}/16
+      pass from 10.192/10 to {{ compute_ip }}/24
+      pass from {{ compute_ip }}/24 to 10.192/10
+
+      # all outbound traffic on ext_if is ok
+      pass out on $ext_if
   
   - name: Enable pf on minio1
     become: yes
@@ -2457,6 +2498,17 @@ cat >site.yml<<"EOF"
     become_user: root
     shell:
       cmd: /root/preparedatabase.sh
+
+  - name: Wait for port 22 to become open, wait for 2 seconds
+    wait_for:
+      port: 22
+      delay: 2
+
+  - name: Run preparenextcloud.sh script
+    become: yes
+    become_user: root
+    shell:
+      cmd: /root/preparenextcloud.sh
 
   - name: Add minio1 hosts to prometheus monitoring from outside jail
     become: yes
@@ -2528,7 +2580,7 @@ Vagrant.configure("2") do |config|
     node.disksize.size = '32GB'
     node.vm.provider "virtualbox" do |vb|
       vb.memory = "8192"
-      vb.cpus = "8"
+      vb.cpus = "1"
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
       vb.customize ["modifyvm", :id, "--vrde", "off"]
       vb.customize ["modifyvm", :id, "--audio", "none"]
@@ -2619,7 +2671,7 @@ Vagrant.configure("2") do |config|
     node.ssh.keep_alive = true
     node.vm.provider "virtualbox" do |vb|
       vb.memory = "4096"
-      vb.cpus = "4"
+      vb.cpus = "1"
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
       vb.customize ["modifyvm", :id, "--vrde", "off"]
       vb.customize ["modifyvm", :id, "--audio", "none"]

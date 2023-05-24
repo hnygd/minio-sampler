@@ -33,9 +33,16 @@ The `packbox` and `startvms` commands should work fine now.
 
 ## Conflicting dependency issues with Vagrant plugins
 
-The plugin `vagrant-disksize` may start to give errors about "Conflicting dependency chains" on a host which upgraded. Attempts to fix by upgrading gems only make the problem worse.
+The plugin `vagrant-disksize` may start to give errors about "Conflicting dependency chains" on a host which upgraded. 
+
+Attempts to fix by upgrading gems only make the problem worse.
 
 The solution is to install a fresh FreeBSD-13.1 system with quarterlies packages and run through detailed install again. The plugin install works correctly then.
+
+However, you can also try the following, which works to update everything without dependency errors:
+```
+VAGRANT_DISABLE_STRICT_DEPENDENCY_ENFORCEMENT=1 VAGRANT_ALLOW_PRERELEASE=1 vagrant upgrade
+```
 
 ## FreeBSD 13.1 uses /usr/local/etc/vbox
 
